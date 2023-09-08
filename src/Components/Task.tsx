@@ -4,21 +4,17 @@ import {
     Button,
     Card,
     DatePicker,
-    Table,
     Form,
     Input,
     Modal,
     Select,
+    Table,
     message,
 } from 'antd'
-import React, { useEffect, useState } from 'react'
-import type { ColumnsType, TableProps } from 'antd/es/table'
+import type { ColumnsType } from 'antd/es/table'
+import type { TableRowSelection } from 'antd/es/table/interface'
 import moment from 'moment'
-import type {
-    FilterValue,
-    SorterResult,
-    TableRowSelection,
-} from 'antd/es/table/interface'
+import React, { useEffect, useState } from 'react'
 import { ITask } from '../Interface/taskInterface'
 import { ITeam } from '../Interface/teamInterface'
 import { IUser } from '../Interface/userInterface'
@@ -32,10 +28,6 @@ const Task: React.FC = () => {
     const [allUsers, setAllUsers] = useState<Partial<IUser[] | []>>()
     const [selectedTasks, setSelectedTasks] = useState<Partial<ITask>[]>()
     const [form] = Form.useForm()
-    const [filteredInfo, setFilteredInfo] = useState<
-        Record<string, FilterValue | null>
-    >({})
-    const [sortedInfo, setSortedInfo] = useState<SorterResult<ITask>>({})
 
     useEffect(() => {
         const updateStateFromLocalStorage = () => {
@@ -117,14 +109,6 @@ const Task: React.FC = () => {
         form.resetFields()
         setOpen(false)
     }
-    const handleChange: TableProps<ITask>['onChange'] = (
-        _pagination,
-        filters,
-        sorter
-    ) => {
-        setFilteredInfo(filters)
-        setSortedInfo(sorter as SorterResult<ITask>)
-    }
 
     const columns: ColumnsType<Partial<ITask>> = [
         {
@@ -155,11 +139,10 @@ const Task: React.FC = () => {
             title: 'Due Date',
             dataIndex: 'due_date',
             key: 'due_date',
-            sorter: (a: any, b: any) =>
-                new Date(a?.due_date) - new Date(b?.due_date),
+            sorter: () => {
+                return 1
+            },
 
-            sortOrder:
-                sortedInfo.columnKey === 'due_date' ? sortedInfo.order : null,
             render: (date: string) => <>{moment(date).format('ll')}</>,
         },
         {
@@ -171,10 +154,19 @@ const Task: React.FC = () => {
                 { text: 'Processing', value: 'processing' },
                 { text: 'Done', value: 'done' },
             ],
-            filteredValue: filteredInfo.status || null,
-            onFilter: (value: string, record) => record.status?.includes(value),
-            ellipsis: true,
-
+            filterMode: 'tree',
+            onFilter: (
+                value: string | number | boolean,
+                record: Partial<ITask>
+            ) => {
+                if (
+                    typeof value === 'string' &&
+                    typeof record.status === 'string'
+                ) {
+                    return record.status.startsWith(value as string)
+                }
+                return false
+            },
             render: (value, pd: any) => {
                 return (
                     <Select
@@ -218,11 +210,12 @@ const Task: React.FC = () => {
             title: 'Priority',
             dataIndex: 'priority_level',
             key: 'priority_level',
-            sorter: (a, b) => a.priority_level.length - b.priority_level.length,
-            sortOrder:
-                sortedInfo.columnKey === 'priority_level'
-                    ? sortedInfo.order
-                    : null,
+            sorter: (a, b) => {
+                const lengthA = a.priority_level ? a.priority_level.length : 0
+                const lengthB = b.priority_level ? b.priority_level.length : 0
+
+                return lengthA - lengthB
+            },
         },
         {
             title: 'Description',
@@ -244,13 +237,10 @@ const Task: React.FC = () => {
         filterArray: ITeam[],
         keyToCompare: string
     ) {
-        console.log(dataArray)
         const filterValues = filterArray?.map((item: any) => item[keyToCompare])
-        console.log(filterValues)
         const de = dataArray?.filter(
             (item: any) => filterValues?.includes(item['team'].team_id)
         )
-        console.log(de)
         return de
     }
 
@@ -339,7 +329,6 @@ const Task: React.FC = () => {
                 rowSelection={{ ...rowSelection }}
                 dataSource={rows}
                 scroll={{ x: 1000 }}
-                onChange={handleChange}
             />
             <Modal
                 open={open}

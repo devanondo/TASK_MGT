@@ -1,24 +1,19 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react'
-import { ITask } from '../Interface/taskInterface'
 import { ITeam } from '../Interface/teamInterface'
 import { IUser } from '../Interface/userInterface'
 import { Button, Card, Typography, message } from 'antd'
 import Flex from './Styled/Flex'
 
 const Profile = () => {
-    const [tasks, setTasks] = useState<Partial<ITask[] | []>>()
     const [teams, setTeams] = useState<Partial<ITeam[] | []>>()
-    const [selectedTeam, setSelectedTeam] = useState<ITeam>()
     const [allUsers, setAllUsers] = useState<Partial<IUser[] | []>>()
     const [profileInfo, setProfileInfo] = useState<Partial<IUser | null>>()
 
     useEffect(() => {
         const updateStateFromLocalStorage = () => {
-            const tasks: Partial<ITask[] | null> = JSON.parse(
-                localStorage.getItem('tasks') as string
-            )
             const teams: Partial<ITeam[] | null> = JSON.parse(
                 localStorage.getItem('teams') as string
             )
@@ -28,7 +23,6 @@ const Profile = () => {
             const loggedUser: Partial<IUser | null> = JSON.parse(
                 localStorage.getItem('loggedUser') as string
             )
-            setTasks(tasks || [])
             setTeams(teams || [])
             setAllUsers(users || [])
 
