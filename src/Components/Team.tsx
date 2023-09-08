@@ -16,6 +16,8 @@ import {
 } from 'antd'
 import type { ColumnsType } from 'antd/es/table'
 
+import { PlusOutlined } from '@ant-design/icons'
+
 import React, { useEffect, useState } from 'react'
 import { ITeam } from '../Interface/teamInterface'
 import { IUser } from '../Interface/userInterface'
@@ -24,11 +26,12 @@ import Flex from './Styled/Flex'
 const Team: React.FC = () => {
     const [allUsers, setAllUsers] = useState<IUser[] | []>()
     const [teams, setTeams] = useState<Partial<ITeam[] | []>>()
+    const [loggedUser, setLoggedUser] = useState<Partial<IUser | null>>()
     const [open, setOpen] = useState(false)
     const [inviteModal, setInviteModal] = useState<boolean>(false)
     const [inviteTeamId, setInviteTeamId] = useState<string>('')
     const [form] = Form.useForm()
-    console.log(inviteTeamId)
+
     const generateTeamId = () => {
         const lastTeam = teams && teams[teams?.length - 1]
 
@@ -49,7 +52,11 @@ const Team: React.FC = () => {
             const teams: Partial<ITeam[] | null> = JSON.parse(
                 localStorage.getItem('teams') as string
             )
+            const loggedUserIn = JSON.parse(
+                localStorage.getItem('loggedUser') as string
+            )
             setTeams(teams || [])
+            setLoggedUser(loggedUserIn)
         }
         window.addEventListener('storage', updateStateFromLocalStorage)
 
@@ -125,15 +132,17 @@ const Team: React.FC = () => {
             render: (_, val: any) => {
                 return (
                     <>
-                        <Button
-                            size="small"
-                            onClick={() => {
-                                setInviteModal(true)
-                                setInviteTeamId(val?.team_id)
-                            }}
-                        >
-                            Invite
-                        </Button>
+                        {val?.creator === loggedUser?.username && (
+                            <Button
+                                size="small"
+                                onClick={() => {
+                                    setInviteModal(true)
+                                    setInviteTeamId(val?.team_id)
+                                }}
+                            >
+                                Invite
+                            </Button>
+                        )}
                     </>
                 )
             },
@@ -153,6 +162,7 @@ const Team: React.FC = () => {
 
         data.members = memebers
         data.team_id = id
+        data.creator = loggedUser?.username
 
         const isTaksExist = teams?.find((team) => team?.team_id === id)
 
@@ -182,8 +192,12 @@ const Team: React.FC = () => {
             title="Team List"
             extra={
                 <>
-                    <Button onClick={() => setOpen(true)} type="primary">
-                        Add Team
+                    <Button
+                        size="small"
+                        onClick={() => setOpen(true)}
+                        type="primary"
+                    >
+                        <PlusOutlined /> Create Team
                     </Button>
                 </>
             }
@@ -270,8 +284,6 @@ const Team: React.FC = () => {
                         <Button
                             type="primary"
                             onClick={() => {
-                                console.log(inviteTeamId)
-                                console.log(usr.username)
                                 const isUserExist = teams
                                     ?.find((tm) => tm?.team_id === inviteTeamId)
                                     ?.members?.filter(

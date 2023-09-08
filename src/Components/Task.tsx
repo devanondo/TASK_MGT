@@ -19,6 +19,7 @@ import { ITask } from '../Interface/taskInterface'
 import { ITeam } from '../Interface/teamInterface'
 import { IUser } from '../Interface/userInterface'
 import Flex from './Styled/Flex'
+import { PlusOutlined } from '@ant-design/icons'
 
 const Task: React.FC = () => {
     const [open, setOpen] = useState(false)
@@ -255,13 +256,6 @@ const Task: React.FC = () => {
         }
     })
 
-    // const rows = tasks?.map((task, i: number) => {
-    //     return {
-    //         key: i + 1,
-    //         ...task,
-    //     }
-    // })
-
     const rowSelection: TableRowSelection<Partial<ITask>> = {
         onChange: (_, selectedRows) => {
             setSelectedTasks(selectedRows)
@@ -279,11 +273,11 @@ const Task: React.FC = () => {
                             onClick={() => setOpen(true)}
                             type="primary"
                         >
-                            Add Task
+                            <PlusOutlined /> Add Task
                         </Button>
                         <Select
                             placeholder="Change Status"
-                            style={{ width: '120px' }}
+                            style={{ width: '150px' }}
                             size="small"
                             onChange={(value) => {
                                 const task = tasks?.map((tak: any) => {
@@ -328,7 +322,7 @@ const Task: React.FC = () => {
                 size="small"
                 rowSelection={{ ...rowSelection }}
                 dataSource={rows}
-                scroll={{ x: 1000 }}
+                scroll={{ x: 900 }}
             />
             <Modal
                 open={open}
