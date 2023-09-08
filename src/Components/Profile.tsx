@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react'
 import { ITeam } from '../Interface/teamInterface'
 import { IUser } from '../Interface/userInterface'
-import { Button, Card, Typography, message } from 'antd'
+import { Button, Card, Image, Typography, message } from 'antd'
 import Flex from './Styled/Flex'
 
 const Profile = () => {
@@ -49,6 +49,16 @@ const Profile = () => {
     return (
         <div>
             <Card style={{ marginBottom: '20px' }} title="Profile Info">
+                <Image
+                    width={80}
+                    style={{
+                        borderRadius: '50%',
+                    }}
+                    src={
+                        profileInfo?.profilePicture ||
+                        'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png'
+                    }
+                />
                 <Typography.Paragraph strong>
                     Username : {profileInfo?.username}
                 </Typography.Paragraph>

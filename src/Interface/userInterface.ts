@@ -2,7 +2,7 @@ export interface IUser {
     email?: string
     username?: string
     password?: string
-    proflePicture?: string
+    profilePicture?: string
     bio?: string
     invited?: string[]
 }

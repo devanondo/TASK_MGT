@@ -1,16 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Card, Form, Input, message } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 
 import { Typography } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import Flex from '../Components/Styled/Flex'
 import { IUser } from '../Interface/userInterface'
+import ImgbbUpload from '../Components/UploadImage/UploadImage'
 
 const Register: React.FC = () => {
     const navigate = useNavigate()
+    const [profilePic, setProfilePic] = useState<string>()
+    const { TextArea } = Input
+
     const onFinish = (values: any) => {
         values.invited = []
+        values.profilePicture = profilePic
         const users: Partial<IUser[] | null> = JSON.parse(
             localStorage.getItem('users') as string
         )
@@ -59,6 +64,22 @@ const Register: React.FC = () => {
             >
                 <Card title="Register Here">
                     <Form.Item
+                        label="Profile Picture"
+                        name="profilePicture"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your profile picture!',
+                            },
+                        ]}
+                    >
+                        <ImgbbUpload
+                            onChange={(url) => {
+                                setProfilePic(url)
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item
                         label="Username"
                         name="username"
                         rules={[
@@ -98,6 +119,19 @@ const Register: React.FC = () => {
                         ]}
                     >
                         <Input.Password />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="bio"
+                        label="Bio Data"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your Bio!',
+                            },
+                        ]}
+                    >
+                        <TextArea showCount rows={3} />
                     </Form.Item>
 
                     <Typography.Paragraph>
